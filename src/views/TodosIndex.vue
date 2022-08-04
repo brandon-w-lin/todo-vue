@@ -11,23 +11,25 @@
       </form>
     </div>
     <br />
-    <div v-for="todo in todos" :key="todo.id" class="todos">
-      <input type="checkbox" :checked="todo.completed === 1 ? true : false" />
-      <div
-        class="description"
-        @click="toggleEdit(todo)"
-        @focusout="handleEdit(todo)"
-      >
-        <span v-if="todo.update">
-          <input type="text" v-model="todo.description" />
-        </span>
-        <span v-else>
-          {{ todo.description }}
-        </span>
-      </div>
-      <button @click="todo.update = !todo.update">update</button>
-      <button @click="deleteTodo(todo)">delete</button>
-    </div>
+    <ul id="todos">
+      <li v-for="todo in todos" :key="todo.id" class="todos">
+        <input type="checkbox" :checked="todo.completed === 1 ? true : false" />
+        <div
+          class="description"
+          @click="toggleEdit(todo)"
+          @focusout="handleEdit(todo)"
+        >
+          <span v-if="todo.update">
+            <input type="text" v-model="todo.description" />
+          </span>
+          <span v-else>
+            {{ todo.description }}
+          </span>
+        </div>
+        <button @click="todo.update = !todo.update">update</button>
+        <button @click="deleteTodo(todo)">delete</button>
+      </li>
+    </ul>
     <button @click="refreshTodosList">Clear completed entries</button>
   </div>
 </template>
@@ -35,6 +37,7 @@
 <script>
 // @ is an alias to /src
 import axios from "axios";
+import Sortable from "sortablejs";
 
 export default {
   name: "TodosIndex",
@@ -51,6 +54,11 @@ export default {
     };
   },
   methods: {
+    initSortable() {
+      new Sortable(document.getElementById("todos"), {
+        // config here
+      });
+    },
     toggleEdit(todo) {
       todo.update = true;
     },
@@ -61,6 +69,7 @@ export default {
     getTodos() {
       axios.get("http://localhost:3000/todos", this.config).then((response) => {
         this.todos = response.data;
+        this.initSortable();
       });
     },
     updateTodo(todo) {
@@ -119,11 +128,20 @@ export default {
 <style>
 .todos {
   text-align: left;
-  margin-left: 40%;
 }
 
 .description {
   width: 300px;
   display: inline-block;
+}
+
+input[type="text"] {
+  outline: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  /* padding: none;
+  margin: none; */
+  /* -webkit-appearance: none; */
 }
 </style>
