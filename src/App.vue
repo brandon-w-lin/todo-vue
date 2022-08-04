@@ -1,17 +1,19 @@
 <template>
-  <nav>
-    <span v-if="isLoggedIn">
-      <router-link to="/users/me">My account</router-link>
-    </span>
-    <span v-else>
-      <router-link to="/login">Login</router-link>
+  <div class="container">
+    <nav>
+      <span v-if="isLoggedIn">
+        <router-link to="/users/me">My account</router-link>
+      </span>
+      <span v-else>
+        <router-link to="/login">Login</router-link>
+        |
+        <router-link to="/signup">Signup</router-link>
+      </span>
       |
-      <router-link to="/signup">Signup</router-link>
-    </span>
-    |
-    <router-link to="/todos">My Todo List</router-link>
-  </nav>
-  <router-view :is-logged-in="isLoggedIn" />
+      <router-link to="/todos">My Todo List</router-link>
+    </nav>
+    <router-view :is-logged-in="isLoggedIn" />
+  </div>
 </template>
 
 <script>

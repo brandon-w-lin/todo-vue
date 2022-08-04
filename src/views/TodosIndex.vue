@@ -11,7 +11,7 @@
       </form>
     </div>
     <br />
-    <ul id="todos">
+    <!-- <ul id="todos">
       <li v-for="todo in todos" :key="todo.id" class="todos">
         <input type="checkbox" :checked="todo.completed === 1 ? true : false" />
         <div
@@ -29,22 +29,38 @@
         <button @click="todo.update = !todo.update">update</button>
         <button @click="deleteTodo(todo)">delete</button>
       </li>
-    </ul>
-    <button @click="refreshTodosList">Clear completed entries</button>
+    </ul> -->
+
+    <draggable
+      v-model="todos"
+      @start="drag = true"
+      @end="drag = false"
+      item-key="id"
+      ghost-class="ghost"
+      class="list-group"
+    >
+      <!-- For some reason, this MUST be called element -->
+      <template #item="{ element }">
+        <div class="list-group-item">{{ element.description }}</div>
+      </template>
+    </draggable>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import axios from "axios";
-import Sortable from "sortablejs";
+import draggable from "vuedraggable";
 
 export default {
   name: "TodosIndex",
-  components: {},
+  components: { draggable },
   data() {
     return {
-      todos: {},
+      drag: false,
+      todos: [], // must be an array to work with Draggable
+      oldIndex: "",
+      newIndex: "",
       config: {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("jwt"),
@@ -54,11 +70,12 @@ export default {
     };
   },
   methods: {
-    initSortable() {
-      new Sortable(document.getElementById("todos"), {
-        // config here
-      });
+    onEnd(event) {
+      console.log(event);
+      this.oldIndex = event.oldIndex;
+      this.newIndex = event.newIndex;
     },
+
     toggleEdit(todo) {
       todo.update = true;
     },
@@ -69,7 +86,7 @@ export default {
     getTodos() {
       axios.get("http://localhost:3000/todos", this.config).then((response) => {
         this.todos = response.data;
-        this.initSortable();
+        // this.initSortable();
       });
     },
     updateTodo(todo) {
@@ -126,22 +143,28 @@ export default {
 </script>
 
 <style>
-.todos {
-  text-align: left;
+.ghost {
+  opacity: 0.5;
+  background: grey;
 }
 
-.description {
+/* .todo {
+  text-align: left;
+  outline: solid;
+  outline-width: thin;
+  padding: 5px;
+  margin: 10px;
+} */
+
+/* .description {
   width: 300px;
   display: inline-block;
-}
+} */
 
-input[type="text"] {
+/* input[type="text"] {
   outline: none;
   border: none;
   font-family: inherit;
   font-size: inherit;
-  /* padding: none;
-  margin: none; */
-  /* -webkit-appearance: none; */
-}
+} */
 </style>
