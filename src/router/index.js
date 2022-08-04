@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
 import TodosIndex from "../views/TodosIndex.vue";
 import MyAccount from "../views/MyAccount.vue";
+import AdminView from "../views/AdminView.vue";
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: "/users/me",
     name: "my-account",
     component: MyAccount,
+  },
+  {
+    path: "/admin",
+    name: "admin-view",
+    component: AdminView,
   },
 ];
 
