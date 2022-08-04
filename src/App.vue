@@ -1,7 +1,7 @@
 <template>
   <nav>
     <span v-if="isLoggedIn">
-      <router-link to="/logout">logout</router-link>
+      <router-link to="/users/me">My account</router-link>
     </span>
     <span v-else>
       <router-link to="/login">Login</router-link>

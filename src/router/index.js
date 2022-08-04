@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
 import TodosIndex from "../views/TodosIndex.vue";
+import MyAccount from "../views/MyAccount.vue";
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: "/todos",
     name: "todos-index",
     component: TodosIndex,
+  },
+  {
+    path: "/users/me",
+    name: "my-account",
+    component: MyAccount,
   },
 ];
 
