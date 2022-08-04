@@ -1,6 +1,11 @@
 <template>
   <div class="home">
-    <div v-if="loggedIn">Logged in successfully</div>
+    <div v-if="isLoggedIn">
+      <div>You are logged in.</div>
+      <router-link to="/">Home</router-link>
+      |
+      <router-link to="/">Your Todo List</router-link>
+    </div>
     <div v-else>
       <form @submit.prevent="sendLoginRequest(username, password)">
         <label for="username">Username:</label>
@@ -18,13 +23,12 @@
 import axios from "axios";
 
 export default {
+  props: { isLoggedIn: Boolean },
   name: "LoginView",
-  components: {},
   data() {
     return {
       username: null,
       password: null,
-      loggedIn: false,
     };
   },
   methods: {

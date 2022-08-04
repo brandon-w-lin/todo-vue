@@ -1,9 +1,33 @@
 <template>
   <nav>
-    <router-link to="/">Home</router-link>
+    <span v-if="isLoggedIn">
+      <router-link to="/logout">logout</router-link>
+    </span>
+    <span v-else>
+      <router-link to="/login">Login</router-link>
+      |
+      <router-link to="/signup">Signup</router-link>
+    </span>
+    |
+    <router-link to="/todos">My Todo List</router-link>
   </nav>
-  <router-view />
+  <router-view :is-logged-in="isLoggedIn" />
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      isLoggedIn: false,
+    };
+  },
+  watch: {
+    $route() {
+      this.isLoggedIn = !!localStorage.jwt;
+    },
+  },
+};
+</script>
 
 <style>
 #app {
