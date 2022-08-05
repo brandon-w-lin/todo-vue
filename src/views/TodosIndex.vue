@@ -30,7 +30,7 @@
         <button @click="deleteTodo(todo)">delete</button>
       </li>
     </ul> -->
-
+    <DetectInactivity after="3000" @inactive="handleInactivity()" />
     <draggable
       v-model="todos"
       @start="drag = true"
@@ -51,10 +51,11 @@
 // @ is an alias to /src
 import axios from "axios";
 import draggable from "vuedraggable";
+import DetectInactivity from "../components/detectInactivity.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable },
+  components: { draggable, DetectInactivity },
   data() {
     return {
       drag: false,
@@ -70,6 +71,11 @@ export default {
     };
   },
   methods: {
+    handleInactivity() {
+      // Check if items have been changed
+      // If changed -> sync with server
+      console.log("inactive user");
+    },
     onEnd(event) {
       console.log(event);
       this.oldIndex = event.oldIndex;
@@ -125,11 +131,6 @@ export default {
           this.getTodos();
         });
     },
-    // refreshTodosList() {
-    //   todos.forEach((todo) => {
-    //     if todo.completed === 1
-    //   })
-    // }
   },
   created() {
     this.getTodos();
