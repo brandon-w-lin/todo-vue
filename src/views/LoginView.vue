@@ -14,6 +14,15 @@
         <input type="password" id="password" v-model="password" />
         <button>submit</button>
       </form>
+      <button @click="sendLoginRequest('brandon', 'password')">
+        Login as Brandon
+      </button>
+      <button @click="sendLoginRequest('lotte', 'password')">
+        Login as Lotte
+      </button>
+      <button @click="sendLoginRequest('archer', 'password')">
+        Login as Archer
+      </button>
     </div>
   </div>
 </template>
