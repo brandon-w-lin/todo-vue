@@ -44,6 +44,7 @@ export default {
           this.username = null;
           this.password = null;
           this.loggedIn = true;
+          this.$router.push({ path: "/todos" });
         });
     },
   },

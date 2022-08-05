@@ -3,6 +3,8 @@
     <nav>
       <span v-if="isLoggedIn">
         <router-link to="/users/me">My account</router-link>
+        |
+        <button @click="logout()">Logout</button>
       </span>
       <span v-else>
         <router-link to="/login">Login</router-link>
@@ -17,11 +19,19 @@
 </template>
 
 <script>
+import router from "./router";
+
 export default {
   data() {
     return {
       isLoggedIn: false,
     };
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("jwt");
+      router.push({ path: "/login" });
+    },
   },
   watch: {
     $route() {
