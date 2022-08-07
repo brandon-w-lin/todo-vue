@@ -11,30 +11,11 @@
       </form>
     </div>
     <br />
-    <!-- <ul id="todos">
-      <li v-for="todo in todos" :key="todo.id" class="todos">
-        <input type="checkbox" :checked="todo.completed === 1 ? true : false" />
-        <div
-          class="description"
-          @click="toggleEdit(todo)"
-          @focusout="handleEdit(todo)"
-        >
-          <span v-if="todo.update">
-            <input type="text" v-model="todo.description" />
-          </span>
-          <span v-else>
-            {{ todo.description }}
-          </span>
-        </div>
-        <button @click="todo.update = !todo.update">update</button>
-        <button @click="deleteTodo(todo)">delete</button>
-      </li>
-    </ul> -->
     <DetectInactivity after="3000" @inactive="handleInactivity()" />
     <draggable
       v-model="todos"
-      @start="drag = true"
-      @end="drag = false"
+      @start="onDragStart()"
+      @end="onDragEnd()"
       item-key="id"
       ghost-class="ghost"
       class="list-group"
@@ -68,18 +49,51 @@ export default {
         },
       },
       newTodo: null,
+      needToSyncWithServer: false,
     };
   },
   methods: {
     handleInactivity() {
-      // Check if items have been changed
-      // If changed -> sync with server
-      console.log("inactive user");
+      console.log("User is inactive. Running inactivity handler");
+      if (this.needToSyncWithServer) {
+        this.needToSyncWithServer = false;
+        this.syncOrder();
+      }
     },
-    onEnd(event) {
-      console.log(event);
-      this.oldIndex = event.oldIndex;
-      this.newIndex = event.newIndex;
+    syncOrder() {
+      console.log("Client is out of sync with server, running sync service");
+      const orderForm = this.createOrderForm();
+      console.log(orderForm);
+      axios
+        .patch("http://localhost:3000/todos/batch", orderForm, this.config)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    createOrderForm() {
+      // First get IDs in the array
+      const possible_ids = this.todos.map((todo) => todo.id);
+
+      // Sort them
+      possible_ids.sort();
+
+      // create batch order and return
+      const orderForm = this.todos.map((todo) => ({
+        id: todo.id,
+        order: possible_ids.shift(),
+      }));
+      return orderForm;
+    },
+
+    // RELATING TO DRAGGABLE
+    onDragStart() {
+      // this.needToSyncWithServer = true;
+    },
+    onDragEnd() {
+      this.needToSyncWithServer = true;
     },
 
     toggleEdit(todo) {
@@ -89,18 +103,13 @@ export default {
       todo.update = false;
       this.updateTodo(todo);
     },
+
+    // REST ACTIONS
     getTodos() {
       axios.get("http://localhost:3000/todos", this.config).then((response) => {
         this.todos = response.data;
-        // this.initSortable();
+        this.todos.sort((a, b) => a.order - b.order);
       });
-    },
-    updateTodo(todo) {
-      axios
-        .patch("http://localhost:3000/todos/" + todo.id, todo, this.config)
-        .then((response) => {
-          console.log(response);
-        });
     },
     createTodo() {
       axios
@@ -115,13 +124,12 @@ export default {
           this.getTodos();
         });
     },
-    clearTodos() {
-      console.log("clearing todos");
-      this.todos.forEach((todo) => {
-        if (todo.completed === 1) {
-          todo.completed = 2;
-        }
-      });
+    updateTodo(todo) {
+      axios
+        .patch("http://localhost:3000/todos/" + todo.id, todo, this.config)
+        .then((response) => {
+          console.log(response);
+        });
     },
     deleteTodo(todo) {
       axios
