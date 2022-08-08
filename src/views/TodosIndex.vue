@@ -23,6 +23,20 @@
       <!-- For some reason, this MUST be called element -->
       <template #item="{ element }">
         <div class="list-group-item">
+          <span class="completed-box">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              :class="completed(element)"
+              @click="setComplete(element)"
+            >
+              <path class="circle" />
+              <path class="check" />
+            </svg>
+          </span>
           <span
             contenteditable="true"
             @input="onInput(element)"
@@ -30,6 +44,7 @@
           >
             {{ element.description }}
           </span>
+
           <span class="fa fa-times close" @click="deleteTodo(element)">x</span>
         </div>
       </template>
@@ -58,12 +73,29 @@ export default {
       },
       newTodo: null,
       needToSyncWithServer: false,
-      editsQueue: {
-        updates: {},
-      },
+      needingSync: [],
     };
   },
   methods: {
+    setComplete(todo) {
+      todo.completed = todo.completed == 0 ? 1 : 0;
+      this.updateTodo(todo);
+      console.log(todo);
+    },
+    completed(todo) {
+      switch (todo.completed) {
+        case 0:
+          console.log("incomplete");
+          return "unchecked";
+        case 1:
+          console.log("completed");
+          return "checked";
+
+        case 2:
+          console.log("moved to completed section");
+          return "checked";
+      }
+    },
     onInput(element) {
       let text = document.getElementById("todo-" + element.id).innerText;
       element.description = text;
@@ -211,6 +243,29 @@ export default {
 [contenteditable] {
   outline: 0px solid transparent;
 }
+
+.completed-box {
+  cursor: pointer;
+  margin: 5px;
+}
+.unchecked .circle {
+  d: path(
+    "M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
+  );
+}
+
+.unchecked:hover .check {
+  d: path(
+    "M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"
+  );
+}
+
+.checked .circle {
+  d: path(
+    "M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+  );
+}
+
 /* .todo {
   text-align: left;
   outline: solid;
@@ -229,5 +284,5 @@ export default {
   border: none;
   font-family: inherit;
   font-size: inherit;
-} */
+} */ ;
 </style>
