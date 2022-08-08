@@ -11,7 +11,7 @@
       </form>
     </div>
     <br />
-    <DetectInactivity after="3000" @inactive="handleInactivity()" />
+    <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
     <draggable
       v-model="todos"
       @start="onDragStart()"
@@ -70,7 +70,7 @@ export default {
       element.updateDescription = true;
       // todo.updateDescription = true;
     },
-    handleInactivity() {
+    handleSyncToServer() {
       console.log("User is inactive. Running inactivity handler");
       if (this.todos.find((todo) => todo.updateDescription === true)) {
         this.syncDescription();
@@ -195,6 +195,9 @@ export default {
   },
   created() {
     this.getTodos();
+    window.addEventListener("beforeunload", () => {
+      this.handleSyncToServer();
+    });
   },
 };
 </script>
