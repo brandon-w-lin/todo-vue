@@ -22,9 +22,22 @@
     >
       <!-- For some reason, this MUST be called element -->
       <template #item="{ element }">
-        <div class="list-group-item">{{ element.description }}</div>
+        <div class="list-group-item">
+          <span
+            contenteditable="true"
+            @input="onInput(element)"
+            :id="`todo-${element.id}`"
+          >
+            {{ element.description }}
+          </span>
+          <span class="fa fa-times close" @click="deleteTodo(element)">x</span>
+        </div>
       </template>
     </draggable>
+    <button @click="createBatch_Description()">
+      Create order for batch description updates
+    </button>
+    <button @click="syncDescription()">sync description</button>
   </div>
 </template>
 
@@ -39,7 +52,6 @@ export default {
   components: { draggable, DetectInactivity },
   data() {
     return {
-      drag: false,
       todos: [], // must be an array to work with Draggable
       oldIndex: "",
       newIndex: "",
@@ -50,9 +62,18 @@ export default {
       },
       newTodo: null,
       needToSyncWithServer: false,
+      editsQueue: {
+        updates: {},
+      },
     };
   },
   methods: {
+    onInput(element) {
+      let text = document.getElementById("todo-" + element.id).innerText;
+      element.description = text;
+      element.updateDescription = true;
+      // todo.updateDescription = true;
+    },
     handleInactivity() {
       console.log("User is inactive. Running inactivity handler");
       if (this.needToSyncWithServer) {
@@ -62,10 +83,14 @@ export default {
     },
     syncOrder() {
       console.log("Client is out of sync with server, running sync service");
-      const orderForm = this.createOrderForm();
-      console.log(orderForm);
+      const batch_order = this.createBatch_Order();
+      // console.log(batch_order);
       axios
-        .patch("http://localhost:3000/todos/batch", orderForm, this.config)
+        .patch(
+          "http://localhost:3000/todos/batch/order",
+          batch_order,
+          this.config
+        )
         .then((response) => {
           console.log(response);
         })
@@ -73,7 +98,25 @@ export default {
           console.log(error);
         });
     },
-    createOrderForm() {
+    syncDescription() {
+      console.log("Client is out of sync with server, running sync service");
+      const batch_description = this.createBatch_Description();
+      console.log(batch_description);
+      axios
+        .patch(
+          "http://localhost:3000/todos/batch/description",
+          batch_description,
+          this.config
+        )
+        .then((response) => {
+          console.log(response);
+          this.todos.forEach((todo) => (todo.updateDescription = false));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    createBatch_Order() {
       // First get IDs in the array
       const possible_ids = this.todos.map((todo) => todo.id);
 
@@ -81,11 +124,25 @@ export default {
       possible_ids.sort();
 
       // create batch order and return
-      const orderForm = this.todos.map((todo) => ({
+      const batch = this.todos.map((todo) => ({
         id: todo.id,
         order: possible_ids.shift(),
       }));
-      return orderForm;
+      return batch;
+    },
+
+    createBatch_Description() {
+      // First get list of id's that were changed
+      const changed_todos = this.todos.filter(
+        (todo) => todo.updateDescription === true
+      );
+      const batch = changed_todos.map((todo) => ({
+        id: todo.id,
+        description: todo.description,
+      }));
+      console.log(batch);
+      return batch;
+      // console.log(changed_todos);
     },
 
     // RELATING TO DRAGGABLE
@@ -96,9 +153,6 @@ export default {
       this.needToSyncWithServer = true;
     },
 
-    toggleEdit(todo) {
-      todo.update = true;
-    },
     handleEdit(todo) {
       todo.update = false;
       this.updateTodo(todo);
@@ -143,11 +197,6 @@ export default {
   created() {
     this.getTodos();
   },
-  watch: {
-    todos: function (value) {
-      console.log(value);
-    },
-  },
 };
 </script>
 
@@ -157,6 +206,9 @@ export default {
   background: grey;
 }
 
+[contenteditable] {
+  outline: 0px solid transparent;
+}
 /* .todo {
   text-align: left;
   outline: solid;
