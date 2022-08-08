@@ -34,10 +34,6 @@
         </div>
       </template>
     </draggable>
-    <button @click="createBatch_Description()">
-      Create order for batch description updates
-    </button>
-    <button @click="syncDescription()">sync description</button>
   </div>
 </template>
 
@@ -76,6 +72,9 @@ export default {
     },
     handleInactivity() {
       console.log("User is inactive. Running inactivity handler");
+      if (this.todos.find((todo) => todo.updateDescription === true)) {
+        this.syncDescription();
+      }
       if (this.needToSyncWithServer) {
         this.needToSyncWithServer = false;
         this.syncOrder();
