@@ -22,7 +22,7 @@
     >
       <!-- For some reason, this MUST be called element -->
       <template #item="{ element }">
-        <div class="list-group-item">
+        <div class="list-group-item grabbable">
           <span class="completed-box">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -38,6 +38,7 @@
             </svg>
           </span>
           <span
+            class="description"
             contenteditable="true"
             @input="onInput(element)"
             :id="`todo-${element.id}`"
@@ -98,14 +99,13 @@ export default {
     completed(todo) {
       switch (todo.completed) {
         case 0:
-          console.log("incomplete");
+          // console.log("incomplete");
           return "unchecked";
         case 1:
-          console.log("completed");
+          // console.log("completed");
           return "checked";
-
         case 2:
-          console.log("moved to completed section");
+          // console.log("moved to completed section");
           return "checked";
       }
     },
@@ -279,6 +279,17 @@ export default {
   );
 }
 
+.grabbable {
+  cursor: move;
+  cursor: grab;
+}
+.grabbable:active {
+  cursor: grabbing;
+}
+
+.description {
+  cursor: text;
+}
 /* .todo {
   text-align: left;
   outline: solid;
