@@ -1,27 +1,17 @@
 <template>
+  <Navbar @logout="logout()" :is-logged-in="isLoggedIn" />
   <div class="container">
-    <nav>
-      <span v-if="isLoggedIn">
-        <router-link to="/users/me">My account</router-link>
-        |
-        <button @click="logout()">Logout</button>
-      </span>
-      <span v-else>
-        <router-link to="/login">Login</router-link>
-        |
-        <router-link to="/signup">Signup</router-link>
-      </span>
-      |
-      <router-link to="/todos">My Todo List</router-link>
-    </nav>
-    <router-view :is-logged-in="isLoggedIn" />
+    <router-view :is-logged-in="isLoggedIn" class="mt-5" />
   </div>
 </template>
 
 <script>
 import router from "./router";
-
+import Navbar from "./components/NavBar.vue";
 export default {
+  components: {
+    Navbar,
+  },
   data() {
     return {
       isLoggedIn: false,
