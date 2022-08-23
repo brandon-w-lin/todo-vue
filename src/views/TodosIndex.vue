@@ -14,7 +14,6 @@
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
     <draggable
       v-model="todos"
-      @start="onDragStart()"
       @end="onDragEnd()"
       item-key="id"
       ghost-class="ghost"
@@ -44,6 +43,7 @@
             :id="`todo-${element.id}`"
           >
             {{ element.description }}
+            {{ element.todos }}
           </span>
 
           <span class="fa fa-times close" @click="deleteTodo(element)"
@@ -63,6 +63,15 @@
         </div>
       </template>
     </draggable>
+    <div class="row">
+      <div class="col-8">
+        <h3>Nested draggable</h3>
+        <nested-draggable :tasks="list" />
+      </div>
+
+      <!-- <rawDisplayer class="col-3" :value="list" title="List" /> -->
+    </div>
+    <button @click="sync()">sync</button>
   </div>
 </template>
 
@@ -71,13 +80,23 @@
 import axios from "axios";
 import draggable from "vuedraggable";
 import DetectInactivity from "../components/detectInactivity.vue";
+import nestedDraggable from "../components/nestedDraggable.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable, DetectInactivity },
+  components: { draggable, DetectInactivity, nestedDraggable },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
+      list: [
+        {
+          description: "go to the store",
+          todos: [
+            { description: "cheese", todos: [] },
+            { description: "bread", todos: [] },
+          ],
+        },
+      ],
       oldIndex: "",
       newIndex: "",
       config: {
@@ -91,40 +110,42 @@ export default {
     };
   },
   methods: {
-    setComplete(todo) {
-      todo.completed = todo.completed == 0 ? 1 : 0;
-      this.updateTodo(todo);
-      console.log(todo);
-    },
-    completed(todo) {
-      switch (todo.completed) {
-        case 0:
-          // console.log("incomplete");
-          return "unchecked";
-        case 1:
-          // console.log("completed");
-          return "checked";
-        case 2:
-          // console.log("moved to completed section");
-          return "checked";
-      }
-    },
-    onInput(element) {
-      let text = document.getElementById("todo-" + element.id).innerText;
-      element.description = text;
-      element.updateDescription = true;
-      // todo.updateDescription = true;
-    },
     handleSyncToServer() {
       console.log("User is inactive. Running inactivity handler");
-      if (this.todos.find((todo) => todo.updateDescription === true)) {
-        this.syncDescription();
-      }
+      // if (this.todos.find((todo) => todo.updateDescription === true)) {
+      //   this.syncDescription();
+      // }
       if (this.needToSyncWithServer) {
         this.needToSyncWithServer = false;
-        this.syncOrder();
+        this.sync();
       }
     },
+    sync() {
+      // get all IDs and sort ascending
+      const possible_ids = this.todos.map((todo) => todo.id);
+      possible_ids.sort();
+
+      // create batch update
+      const batch = this.todos.map((todo) => ({
+        id: todo.id,
+        order: possible_ids.shift(),
+        description: todo.description,
+        completed: todo.completed,
+      }));
+      console.log(batch);
+      // send batch update
+      axios
+        .patch("http://localhost:3000/todos/batch", batch, this.config)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      console.log(batch);
+    },
+
     syncOrder() {
       console.log("Client is out of sync with server, running sync service");
       const batch_order = this.createBatch_Order();
@@ -160,49 +181,73 @@ export default {
           console.log(error);
         });
     },
-    createBatch_Order() {
-      // First get IDs in the array
-      const possible_ids = this.todos.map((todo) => todo.id);
 
-      // Sort them
-      possible_ids.sort();
+    createTodoLocal() {},
+    // createBatch_Order() {
+    //   // First get IDs in the array
+    //   const possible_ids = this.todos.map((todo) => todo.id);
 
-      // create batch order and return
-      const batch = this.todos.map((todo) => ({
-        id: todo.id,
-        order: possible_ids.shift(),
-      }));
-      return batch;
-    },
+    //   // Sort them
+    //   possible_ids.sort();
 
-    createBatch_Description() {
-      // First get list of id's that were changed
-      const changed_todos = this.todos.filter(
-        (todo) => todo.updateDescription === true
-      );
-      const batch = changed_todos.map((todo) => ({
-        id: todo.id,
-        description: todo.description,
-      }));
-      console.log(batch);
-      return batch;
-      // console.log(changed_todos);
-    },
+    //   // create batch order and return
+    //   const batch = this.todos.map((todo) => ({
+    //     id: todo.id,
+    //     order: possible_ids.shift(),
+    //   }));
+    //   return batch;
+    // },
 
-    // RELATING TO DRAGGABLE
-    onDragStart() {
-      // this.needToSyncWithServer = true;
-    },
+    // createBatch_Description() {
+    //   // First get list of id's that were changed
+    //   const changed_todos = this.todos.filter(
+    //     (todo) => todo.updateDescription === true
+    //   );
+    //   const batch = changed_todos.map((todo) => ({
+    //     id: todo.id,
+    //     description: todo.description,
+    //   }));
+    //   console.log(batch);
+    //   return batch;
+    //   // console.log(changed_todos);
+    // },
+
+    // TRIGGERS FOR SYNC WITH SERVER:
+    // CHANGE POSITION
     onDragEnd() {
       this.needToSyncWithServer = true;
     },
 
-    handleEdit(todo) {
-      todo.update = false;
-      this.updateTodo(todo);
+    // CHANGE CONTENT
+    onInput(element) {
+      let text = document.getElementById("todo-" + element.id).innerText;
+      element.description = text;
+      this.needToSyncWithServer = true;
+      // element.updateDescription = true;
+      // todo.updateDescription = true;
     },
 
-    // REST ACTIONS
+    // COMPLETED
+    setComplete(todo) {
+      todo.completed = todo.completed == 0 ? 1 : 0;
+      // this.updateTodo(todo);
+      this.needToSyncWithServer = true;
+    },
+    completed(todo) {
+      switch (todo.completed) {
+        case 0:
+          // console.log("incomplete");
+          return "unchecked";
+        case 1:
+          // console.log("completed");
+          return "checked";
+        case 2:
+          // console.log("moved to completed section");
+          return "checked";
+      }
+    },
+
+    // SINGLE REST ACTIONS (DEPRECATED -> USE BATCH)
     getTodos() {
       axios.get("http://localhost:3000/todos", this.config).then((response) => {
         this.todos = response.data;
