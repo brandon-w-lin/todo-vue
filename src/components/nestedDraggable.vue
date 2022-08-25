@@ -2,14 +2,14 @@
   <draggable
     class="dragArea"
     tag="ul"
-    :list="tasks"
+    :list="todos"
     :group="{ name: 'g1' }"
     item-key="description"
   >
     <template #item="{ element }">
       <li>
         <p>{{ element.description }}</p>
-        <nested-draggable :tasks="element.todos" />
+        <nested-draggable :todos="element.todos" />
       </li>
     </template>
   </draggable>
@@ -18,7 +18,7 @@
 import draggable from "vuedraggable";
 export default {
   props: {
-    tasks: {
+    todos: {
       required: true,
       type: Array,
     },
