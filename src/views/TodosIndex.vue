@@ -1,7 +1,7 @@
 <template>
   <div>
     <button @click="convertToNested()">convert to nested</button>
-    <button @click="convertToFlat()">convert to nested</button>
+    <button @click="convertToFlat()">convert to flat</button>
     <button @click="sync()">sync</button>
 
     <div>
@@ -70,7 +70,7 @@
     <div class="row">
       <div class="col-8">
         <h3>Nested draggable</h3>
-        <nested-draggable :todos="nestedTodos" @end="onDragEnd()" />
+        <nested-draggable :todos="nestedTodos" @movedItem="onDragEnd()" />
       </div>
     </div>
 
@@ -108,6 +108,9 @@ export default {
     };
   },
   methods: {
+    movedItem() {
+      console.log("test");
+    },
     handleSyncToServer() {
       console.log("User is inactive. Running inactivity handler");
       // if (this.todos.find((todo) => todo.updateDescription === true)) {
@@ -137,7 +140,7 @@ export default {
       this.nestedTodos.forEach((todo) => {
         flatten(todo, null);
       });
-      console.log(output);
+      console.log("Convert to flat output: ", output);
       this.flatTodos = output;
       return output;
     },
@@ -240,7 +243,7 @@ export default {
         completed: todo.completed,
         parent_id: todo.parent_id,
       }));
-      console.log(batch);
+      console.log("batch: ", batch);
       // send batch update
       axios
         .patch("http://localhost:3000/todos/batch", batch, this.config)
@@ -321,6 +324,7 @@ export default {
     // TRIGGERS FOR SYNC WITH SERVER:
     // CHANGE POSITION
     onDragEnd() {
+      console.log("drag end, setting sync with server to true");
       this.needToSyncWithServer = true;
     },
 

@@ -5,11 +5,12 @@
     :list="todos"
     :group="{ name: 'g1' }"
     item-key="description"
+    @end="$emit('movedItem')"
   >
     <template #item="{ element }">
       <li>
         <p>{{ element.description }}</p>
-        <nested-draggable :todos="element.todos" />
+        <nested-draggable :todos="element.todos" @movedItem="movedItem" />
       </li>
     </template>
   </draggable>
@@ -23,10 +24,16 @@ export default {
       type: Array,
     },
   },
+  emits: ["movedItem"],
   components: {
     draggable,
   },
   name: "nested-draggable",
+  methods: {
+    movedItem() {
+      this.$emit("movedItem");
+    },
+  },
 };
 </script>
 <style scoped>
