@@ -19,7 +19,6 @@
       ghost-class="ghost"
       class="list-group"
     >
-      <!-- For some reason, this MUST be called element -->
       <template #item="{ element }">
         <div class="list-group-item grabbable">
           <span class="completed-box">
@@ -43,7 +42,6 @@
             :id="`todo-${element.id}`"
           >
             {{ element.description }}
-            {{ element.todos }}
           </span>
 
           <span class="fa fa-times close" @click="deleteTodo(element)"
@@ -64,7 +62,11 @@
       </template>
     </draggable>
 
-    <nested-draggable :todos="nestedTodos" @movedItem="onDragEnd()" />
+    <nested-draggable
+      :todos="nestedTodos"
+      @movedItem="onDragEnd()"
+      @onInput="(element, text) => onInput(element, text)"
+    />
 
     <!-- <ShowData :todos="todos"></ShowData> -->
     <ShowData :todos="nestedTodos"></ShowData>
@@ -137,7 +139,8 @@ export default {
     },
     convertToNested() {
       // create new instances of each object or we will end up modifying the master
-      let flat = this.todos.map((todo) => ({ ...todo }));
+      // let flat = this.todos.map((todo) => ({ ...todo }));
+      let flat = this.todos;
       flat.forEach((item) => (item.todos = []));
 
       function checkLeftOvers(leftOvers, possibleParent) {
@@ -228,8 +231,9 @@ export default {
     },
 
     // CHANGE CONTENT
-    onInput(element) {
-      let text = document.getElementById("todo-" + element.id).innerText;
+    onInput(element, text) {
+      console.log("Calling onInput in TodosIndex for :", element);
+      // let text = document.getElementById("todo-" + element.id).innerText;
       element.description = text;
       this.needToSyncWithServer = true;
       // element.updateDescription = true;
