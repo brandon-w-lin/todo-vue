@@ -136,40 +136,16 @@ export default {
       return output;
     },
     convertToNested() {
-      // // let seen = array to hold traversed nodes
-      // let seen = {};
-      // // let nested = the output we want
-      // let nested = [];
-      // let waiting_for_parent = [];
-      // this.todos.forEach((todo) => {
-      //   seen[todo.id] = todo.id;
-      //   if (todo.parent_id !== null) {
-      //     // find parent
-      //     const parent = nested.find((parent) => (parent.id = todo.parent_id));
-      //     parent.todos.push();
-      //   }
-      //   // look for this id in the waiting for parent queue
-      // });
-      // console.log(seen);
-      // console.log(nested);
-      // // if parent does not exist ->
-      // //    check if any children are waiting <-- will need to be recursive in order to
-      // //    add to seen and nested and go to next
-      // // if parent exists -> need to find and attach
-      // // determine if the parent is already in nested -> attach
-      // // if parent is not already in nested -> hold on the side for when it does go in
-
-      let flat = this.todos.map((todo) => ({ ...todo })); // create new instances of each object
+      // create new instances of each object or we will end up modifying the master
+      let flat = this.todos.map((todo) => ({ ...todo }));
       flat.forEach((item) => (item.todos = []));
 
       function checkLeftOvers(leftOvers, possibleParent) {
         for (let i = 0; i < leftOvers.length; i++) {
           if (leftOvers[i].parent_id === possibleParent.id) {
-            // delete leftOvers[i].parent_id;
             possibleParent.todos
               ? possibleParent.todos.push(leftOvers[i])
               : (possibleParent.todos = [leftOvers[i]]);
-            // possibleParent.count = possibleParent.todos.length;
             const addedObj = leftOvers.splice(i, 1);
             checkLeftOvers(leftOvers, possibleParent);
             checkLeftOvers(leftOvers, addedObj[0]);
@@ -182,11 +158,9 @@ export default {
         for (let i = 0; i < possibleParents.length; i++) {
           if (possibleParents[i].id === possibleChild.parent_id) {
             found = true;
-            // delete possibleChild.parent_id;
             if (possibleParents[i].todos)
               possibleParents[i].todos.push(possibleChild);
             else possibleParents[i].todos = [possibleChild];
-            // possibleParents[i].count = possibleParents[i].todos.length;
             return true;
           } else if (possibleParents[i].todos)
             found = findParent(possibleParents[i].todos, possibleChild);
@@ -200,8 +174,6 @@ export default {
             // check if any of the children are waiting on this node so they can attach to it
             if (initial.unplaced.length)
               checkLeftOvers(initial.unplaced, value);
-            // delete value.parent_id;
-            // value.root = true;
             initial.nested.push(value);
           } else {
             // parent id exists -> need to find it and attach this node
