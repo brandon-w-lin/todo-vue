@@ -1,9 +1,5 @@
 <template>
   <div>
-    <button @click="convertToNested()">convert to nested</button>
-    <button @click="convertToFlat()">convert to flat</button>
-    <button @click="sync()">sync</button>
-
     <div>
       <form @submit="createTodo">
         <input
@@ -67,12 +63,8 @@
         </div>
       </template>
     </draggable>
-    <div class="row">
-      <div class="col-8">
-        <h3>Nested draggable</h3>
-        <nested-draggable :todos="nestedTodos" @movedItem="onDragEnd()" />
-      </div>
-    </div>
+
+    <nested-draggable :todos="nestedTodos" @movedItem="onDragEnd()" />
 
     <!-- <ShowData :todos="todos"></ShowData> -->
     <!-- <ShowData :todos="nestedTodos"></ShowData> -->
@@ -86,11 +78,11 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import DetectInactivity from "../components/detectInactivity.vue";
 import nestedDraggable from "../components/nestedDraggable.vue";
-import ShowData from "../components/ShowData.vue";
+// import ShowData from "../components/ShowData.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable, DetectInactivity, nestedDraggable, ShowData },
+  components: { draggable, DetectInactivity, nestedDraggable },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
