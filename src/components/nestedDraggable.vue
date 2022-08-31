@@ -1,6 +1,6 @@
 <template>
   <draggable
-    class="item-container"
+    class="grabbable"
     tag="ul"
     :list="todos"
     :group="{ name: 'g1' }"
@@ -79,10 +79,6 @@ export default {
   outline: 1px solid;
 }
 
-.item-container {
-  /* max-width: 20rem; */
-  margin: 0;
-}
 .item {
   padding: 1rem;
   margin: 0.1rem;
@@ -101,14 +97,24 @@ export default {
 div.text-input-container {
   -webkit-user-select: none;
 }
+
 .invisible {
   visibility: hidden;
 }
 
 div.text-input {
   display: inline-block;
+  cursor: text;
 }
 div.text-input:focus-within {
   background-color: cornsilk;
+}
+
+.grabbable {
+  cursor: move;
+  cursor: grab;
+}
+.grabbable:active {
+  cursor: grabbing;
 }
 </style>
