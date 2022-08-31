@@ -74,8 +74,9 @@
       </div>
     </div>
 
-    <!-- <ShowData :todos="todos"></ShowData>
-    <ShowData :todos="nestedTodos"></ShowData> -->
+    <!-- <ShowData :todos="todos"></ShowData> -->
+    <!-- <ShowData :todos="nestedTodos"></ShowData> -->
+    <!-- <ShowData :todos="flatTodos"></ShowData> -->
   </div>
 </template>
 
@@ -85,11 +86,11 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import DetectInactivity from "../components/detectInactivity.vue";
 import nestedDraggable from "../components/nestedDraggable.vue";
-// import ShowData from "../components/ShowData.vue";
+import ShowData from "../components/ShowData.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable, DetectInactivity, nestedDraggable },
+  components: { draggable, DetectInactivity, nestedDraggable, ShowData },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
@@ -127,9 +128,7 @@ export default {
       function flatten(old_obj, parent_id) {
         let obj = { ...old_obj };
 
-        if (parent_id != null) {
-          obj.parent_id = parent_id;
-        }
+        obj.parent_id = parent_id;
 
         if (obj.todos.length > 0) {
           obj.todos.forEach((todo) => flatten(todo, obj.id));
