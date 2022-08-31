@@ -67,8 +67,8 @@
     <nested-draggable :todos="nestedTodos" @movedItem="onDragEnd()" />
 
     <!-- <ShowData :todos="todos"></ShowData> -->
-    <!-- <ShowData :todos="nestedTodos"></ShowData> -->
-    <!-- <ShowData :todos="flatTodos"></ShowData> -->
+    <ShowData :todos="nestedTodos"></ShowData>
+    <ShowData :todos="flatTodos"></ShowData>
   </div>
 </template>
 
@@ -78,11 +78,11 @@ import axios from "axios";
 import draggable from "vuedraggable";
 import DetectInactivity from "../components/detectInactivity.vue";
 import nestedDraggable from "../components/nestedDraggable.vue";
-// import ShowData from "../components/ShowData.vue";
+import ShowData from "../components/ShowData.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable, DetectInactivity, nestedDraggable },
+  components: { draggable, DetectInactivity, nestedDraggable, ShowData },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
@@ -196,8 +196,10 @@ export default {
       this.convertToFlat();
       // get all IDs and sort ascending
       const possible_ids = this.flatTodos.map((todo) => todo.id);
-      possible_ids.sort();
-
+      possible_ids.sort((a, b) => {
+        return a - b;
+      });
+      console.log("Possible IDs: ", possible_ids);
       // create batch update
       const batch = this.flatTodos.map((todo) => ({
         id: todo.id,
@@ -217,72 +219,6 @@ export default {
           console.log(error);
         });
     },
-
-    syncOrder() {
-      console.log("Client is out of sync with server, running sync service");
-      const batch_order = this.createBatch_Order();
-      // console.log(batch_order);
-      axios
-        .patch(
-          "http://localhost:3000/todos/batch/order",
-          batch_order,
-          this.config
-        )
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    syncDescription() {
-      console.log("Client is out of sync with server, running sync service");
-      const batch_description = this.createBatch_Description();
-      console.log(batch_description);
-      axios
-        .patch(
-          "http://localhost:3000/todos/batch/description",
-          batch_description,
-          this.config
-        )
-        .then((response) => {
-          console.log(response);
-          this.todos.forEach((todo) => (todo.updateDescription = false));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
-    createTodoLocal() {},
-    // createBatch_Order() {
-    //   // First get IDs in the array
-    //   const possible_ids = this.todos.map((todo) => todo.id);
-
-    //   // Sort them
-    //   possible_ids.sort();
-
-    //   // create batch order and return
-    //   const batch = this.todos.map((todo) => ({
-    //     id: todo.id,
-    //     order: possible_ids.shift(),
-    //   }));
-    //   return batch;
-    // },
-
-    // createBatch_Description() {
-    //   // First get list of id's that were changed
-    //   const changed_todos = this.todos.filter(
-    //     (todo) => todo.updateDescription === true
-    //   );
-    //   const batch = changed_todos.map((todo) => ({
-    //     id: todo.id,
-    //     description: todo.description,
-    //   }));
-    //   console.log(batch);
-    //   return batch;
-    //   // console.log(changed_todos);
-    // },
 
     // TRIGGERS FOR SYNC WITH SERVER:
     // CHANGE POSITION
@@ -326,6 +262,7 @@ export default {
         this.todos = response.data;
         this.todos.sort((a, b) => a.order - b.order);
         this.convertToNested();
+        this.convertToFlat();
       });
     },
     createTodo() {
