@@ -12,26 +12,6 @@
     </div>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
-    <draggable
-      v-model="todos"
-      @end="onDragEnd()"
-      item-key="id"
-      ghost-class="ghost"
-      class="list-group"
-    >
-      <template #item="{ element }">
-        <div class="list-group-item grabbable">
-          <span
-            class="description"
-            contenteditable="true"
-            @input="onInput(element)"
-            :id="`todo-${element.id}`"
-          >
-            {{ element.description }}
-          </span>
-        </div>
-      </template>
-    </draggable>
 
     <nested-draggable
       :todos="nestedTodos"
@@ -49,14 +29,13 @@
 <script>
 // @ is an alias to /src
 import axios from "axios";
-import draggable from "vuedraggable";
 import DetectInactivity from "../components/detectInactivity.vue";
 import nestedDraggable from "../components/nestedDraggable.vue";
 import ShowData from "../components/ShowData.vue";
 
 export default {
   name: "TodosIndex",
-  components: { draggable, DetectInactivity, nestedDraggable, ShowData },
+  components: { DetectInactivity, nestedDraggable, ShowData },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
