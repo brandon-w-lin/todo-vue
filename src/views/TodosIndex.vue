@@ -54,9 +54,6 @@ export default {
     };
   },
   methods: {
-    movedItem() {
-      console.log("test");
-    },
     handleSyncToServer() {
       console.log("User is inactive. Running inactivity handler");
       // if (this.todos.find((todo) => todo.updateDescription === true)) {
