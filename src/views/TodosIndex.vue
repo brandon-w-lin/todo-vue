@@ -52,6 +52,7 @@
       :todos="nestedTodos"
       @movedItem="onDragEnd()"
       @onInput="(element, text) => onInput(element, text)"
+      @onDelete="(element) => deleteTodo(element)"
     />
 
     <!-- <ShowData :todos="todos"></ShowData> -->
