@@ -240,44 +240,4 @@ export default {
 };
 </script>
 
-<style>
-.ghost {
-  opacity: 0.5;
-  background: grey;
-}
-
-[contenteditable] {
-  outline: 0px solid transparent;
-}
-
-.grabbable {
-  cursor: move;
-  cursor: grab;
-}
-.grabbable:active {
-  cursor: grabbing;
-}
-
-.description {
-  cursor: text;
-}
-/* .todo {
-  text-align: left;
-  outline: solid;
-  outline-width: thin;
-  padding: 5px;
-  margin: 10px;
-} */
-
-/* .description {
-  width: 300px;
-  display: inline-block;
-} */
-
-/* input[type="text"] {
-  outline: none;
-  border: none;
-  font-family: inherit;
-  font-size: inherit;
-} */ ;
-</style>
+<style></style>
