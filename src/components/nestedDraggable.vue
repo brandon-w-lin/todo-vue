@@ -1,16 +1,16 @@
 <template>
   <draggable
-    class="grabbable"
-    tag="ul"
+    class="todo-list"
     :list="todos"
     :group="{ name: 'g1' }"
     item-key="description"
     @end="$emit('movedItem')"
-    ghost-class="ghost"
+    ghostClass="ghost"
+    dragClass="drag"
   >
     <template #item="{ element }">
       <div>
-        <div class="item">
+        <div class="todo-list-item grabbable">
           <!-- The text-input-container, invisible items, and text-input classes are needed to disallow text selection from outside of the text area. See https://stackoverflow.com/questions/34354085/clicking-outside-a-contenteditable-div-stills-give-focus-to-it-->
           <div class="text-input-container">
             <span class="invisible">&#8203;</span>
@@ -27,7 +27,7 @@
           </div>
         </div>
         <nested-draggable
-          class="item-sub"
+          class="todo-list-sub-item"
           :todos="element.todos"
           @movedItem="$emit('movedItem')"
         />
@@ -54,58 +54,49 @@ export default {
     onInput(element) {
       let text = document.getElementById("todo-nested-" + element.id).innerText;
       this.$emit("onInput", element, text);
-      // element.description = text;
-      // console.log(element.description);
-      // this.needToSyncWithServer = true;
-      // element.updateDescription = true;
-      // todo.updateDescription = true;
-    },
-  },
-  computed: {
-    dragOptions() {
-      return {
-        animation: 0,
-        group: "description",
-        disabled: false,
-        ghostClass: "ghost",
-      };
     },
   },
 };
 </script>
 <style scoped>
-.dragArea {
-  min-height: 50px;
-  outline: 1px solid;
-}
-
-.item {
-  padding: 1rem;
-  margin: 0.1rem;
-  border: solid black 1px;
-  background-color: #fefefe;
-}
-.item-sub {
-  margin: 0 0 0 1rem;
+/* Pertaining to sortable/draggable */
+.drag {
+  background-color: white;
 }
 
 .ghost {
   opacity: 0.5;
-  background: grey;
+  background-color: grey;
 }
 
+.todo-list {
+  /*  */
+}
+
+.todo-list-item {
+  border: solid thin;
+  border-color: rgb(183, 183, 183);
+  padding: 0.5rem;
+  border-radius: 3px;
+}
+
+.todo-list-sub-item {
+  margin: 0 0 0 1rem; /* adds indentation at each sub-level */
+}
+
+/* text-input-container, invisible, and text-input are needed to keep text targeting limited to the text area, prevent selection from outside box */
 div.text-input-container {
   -webkit-user-select: none;
 }
-
 .invisible {
   visibility: hidden;
 }
-
 div.text-input {
   display: inline-block;
   cursor: text;
 }
+
+/* Other */
 div.text-input:focus-within {
   background-color: cornsilk;
 }
