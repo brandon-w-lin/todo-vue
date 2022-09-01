@@ -11,8 +11,22 @@
     <template #item="{ element }">
       <div>
         <div class="todo-list-item grabbable">
+          <span class="completed-box">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+              :class="completed(element)"
+              @click="setComplete(element)"
+            >
+              <path class="circle" />
+              <path class="check" />
+            </svg>
+          </span>
           <!-- The text-input-container, invisible items, and text-input classes are needed to disallow text selection from outside of the text area. See https://stackoverflow.com/questions/34354085/clicking-outside-a-contenteditable-div-stills-give-focus-to-it-->
-          <div class="text-input-container">
+          <span class="text-input-container">
             <span class="invisible">&#8203;</span>
             <div class="text-input">
               <div
@@ -24,7 +38,7 @@
               </div>
             </div>
             <span class="invisible">&#8203;</span>
-          </div>
+          </span>
         </div>
         <nested-draggable
           class="todo-list-sub-item"
@@ -55,6 +69,22 @@ export default {
       let text = document.getElementById("todo-nested-" + element.id).innerText;
       this.$emit("onInput", element, text);
     },
+    completed(todo) {
+      switch (todo.completed) {
+        case 0:
+          // console.log("incomplete");
+          return "unchecked";
+        case 1:
+          // console.log("completed");
+          return "checked";
+        case 2:
+          // console.log("moved to completed section");
+          return "checked";
+      }
+    },
+    setComplete(todo) {
+      todo.completed = todo.completed == 0 ? 1 : 0;
+    },
   },
 };
 </script>
@@ -78,6 +108,8 @@ export default {
   border-color: rgb(183, 183, 183);
   padding: 0.5rem;
   border-radius: 3px;
+  display: flex;
+  align-items: center;
 }
 
 .todo-list-sub-item {
@@ -94,6 +126,30 @@ div.text-input-container {
 div.text-input {
   display: inline-block;
   cursor: text;
+}
+
+/* Formatting for checkbox */
+.completed-box {
+  cursor: pointer;
+  display: flex;
+}
+
+.unchecked .circle {
+  d: path(
+    "M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"
+  );
+}
+
+.unchecked:hover .check {
+  d: path(
+    "M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"
+  );
+}
+
+.checked .circle {
+  d: path(
+    "M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"
+  );
 }
 
 /* Other */
