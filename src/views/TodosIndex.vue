@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <form @submit="createTodo">
+      <form @submit="createTodo(newTodo)">
         <input
           type="text"
           placeholder="Enter new todos here..."
@@ -10,6 +10,7 @@
         <button>submit</button>
       </form>
     </div>
+    <button @click="createTodo('Enter todo here')">New Todo</button>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
 
@@ -197,11 +198,11 @@ export default {
         this.convertToFlat();
       });
     },
-    createTodo() {
+    createTodo(description) {
       axios
         .post(
           "http://localhost:3000/todos/",
-          { description: this.newTodo },
+          { description: description },
           this.config
         )
         .then((response) => {
