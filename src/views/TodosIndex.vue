@@ -10,7 +10,7 @@
         <button>submit</button>
       </form>
     </div>
-    <button @click="createTodo('Enter todo here')">New Todo</button>
+    <button @click="handleCreateTodo('Enter todo here')">New Todo</button>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
 
@@ -55,6 +55,12 @@ export default {
     };
   },
   methods: {
+    async handleCreateTodo(description) {
+      const newTodo = await this.createTodo(description);
+      setTimeout(() => {
+        document.getElementById("todo-nested-" + newTodo.id).focus();
+      }, 50);
+    },
     handleSyncToServer() {
       console.log("User is inactive. Running inactivity handler");
       // if (this.todos.find((todo) => todo.updateDescription === true)) {
@@ -198,18 +204,19 @@ export default {
         this.convertToFlat();
       });
     },
-    createTodo(description) {
-      axios
+    async createTodo(description) {
+      const newTodo = await axios
         .post(
           "http://localhost:3000/todos/",
           { description: description },
           this.config
         )
         .then((response) => {
-          console.log(response);
           this.newTodo = null;
-          this.getTodos();
+          return response.data;
         });
+      await this.getTodos();
+      return newTodo;
     },
     updateTodo(todo) {
       axios
