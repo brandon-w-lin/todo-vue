@@ -10,7 +10,7 @@
         <button>submit</button>
       </form>
     </div>
-    <button @click="handleCreateTodo('Enter todo here')">New Todo</button>
+    <button @click="handleCreateTodo()">New Todo</button>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
 
@@ -55,8 +55,8 @@ export default {
     };
   },
   methods: {
-    async handleCreateTodo(description) {
-      const newTodo = await this.createTodo(description);
+    async handleCreateTodo() {
+      const newTodo = await this.createTodo();
       setTimeout(() => {
         document.getElementById("todo-nested-" + newTodo.id).focus();
       }, 50);
