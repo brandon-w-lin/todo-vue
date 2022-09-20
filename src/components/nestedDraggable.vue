@@ -28,14 +28,19 @@
           <!-- The text-input-container, invisible items, and text-input classes are needed to disallow text selection from outside of the text area. See https://stackoverflow.com/questions/34354085/clicking-outside-a-contenteditable-div-stills-give-focus-to-it-->
           <span class="text-input-container">
             <span class="invisible">&#8203;</span>
-            <div class="text-input">
-              <div
+            <div
+              class="text-input"
+              contenteditable="true"
+              @blur="onInput(element)"
+              :id="`todo-nested-${element.id}`"
+            >
+              <!-- <div
                 contenteditable="true"
                 @blur="onInput(element)"
                 :id="`todo-nested-${element.id}`"
-              >
-                {{ element.description }}
-              </div>
+              > -->
+              {{ element.description }}
+              <!-- </div> -->
             </div>
             <span class="invisible">&#8203;</span>
           </span>
@@ -143,6 +148,11 @@ div.text-input-container {
 div.text-input {
   display: inline-block;
   cursor: text;
+}
+
+div.text-input[contenteditable]:empty::before {
+  content: "What do we need to do today?";
+  color: grey;
 }
 
 /* Formatting for checkbox */
