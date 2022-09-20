@@ -155,7 +155,7 @@ export default {
       // get all IDs and sort ascending
       const possible_ids = this.flatTodos.map((todo) => todo.id);
       possible_ids.sort((a, b) => {
-        return a - b;
+        return b - a;
       });
       console.log("Possible IDs: ", possible_ids);
       // create batch update
@@ -199,7 +199,7 @@ export default {
     getTodos() {
       axios.get("http://localhost:3000/todos", this.config).then((response) => {
         this.todos = response.data;
-        this.todos.sort((a, b) => a.order - b.order);
+        this.todos.sort((a, b) => b.order - a.order);
         this.convertToNested();
         this.convertToFlat();
       });
