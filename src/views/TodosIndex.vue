@@ -10,7 +10,7 @@
         <button>submit</button>
       </form>
     </div>
-    <button @click="handleCreateTodo()">New Todo</button>
+    <button id="add-new-button" @click="handleCreateTodo()">New Todo</button>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
 
@@ -248,4 +248,14 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+#add-new-button {
+  border: solid thin;
+  border-color: rgb(183, 183, 183);
+  padding: 0.5rem;
+  border-radius: 3px;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+}
+</style>
