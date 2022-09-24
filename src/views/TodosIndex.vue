@@ -1,15 +1,5 @@
 <template>
   <div>
-    <div>
-      <form @submit="createTodo(newTodo)">
-        <input
-          type="text"
-          placeholder="Enter new todos here..."
-          v-model="newTodo"
-        />
-        <button>submit</button>
-      </form>
-    </div>
     <button id="add-new-button" @click="handleCreateTodo()">New Todo</button>
     <br />
     <DetectInactivity after="3000" @inactive="handleSyncToServer()" />
