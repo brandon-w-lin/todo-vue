@@ -43,7 +43,7 @@ export default {
   methods: {
     sendLoginRequest(username, password) {
       axios
-        .post("http://localhost:3000/login", {
+        .post("/login", {
           username: username,
           password: password,
         })

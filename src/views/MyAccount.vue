@@ -33,11 +33,9 @@ export default {
   },
   methods: {
     getMyAccountInfo() {
-      axios
-        .get("http://localhost:3000/users/me", this.config)
-        .then((response) => {
-          this.user = response.data;
-        });
+      axios.get("/users/me", this.config).then((response) => {
+        this.user = response.data;
+      });
     },
   },
   created() {

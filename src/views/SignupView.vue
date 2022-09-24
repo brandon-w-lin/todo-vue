@@ -11,7 +11,7 @@ export default {
   methods: {
     submit: function () {
       axios
-        .post("http://localhost:3000/users", this.newUserParams)
+        .post("/users", this.newUserParams)
         .then((response) => {
           console.log(response.data);
           this.$router.push("/login");

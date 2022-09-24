@@ -42,24 +42,22 @@ export default {
   },
   methods: {
     authorization() {
-      axios
-        .get("http://localhost:3000/users/me", this.config)
-        .then((response) => {
-          const highestRole = Math.max(
-            response.data.roles.map((role) => role.id)
-          );
-          if (highestRole > 1) {
-            this.adminRights = true;
-          }
-        });
+      axios.get("/users/me", this.config).then((response) => {
+        const highestRole = Math.max(
+          response.data.roles.map((role) => role.id)
+        );
+        if (highestRole > 1) {
+          this.adminRights = true;
+        }
+      });
     },
     getUsers() {
-      axios.get("http://localhost:3000/users", this.config).then((response) => {
+      axios.get("/users", this.config).then((response) => {
         this.users = response.data;
       });
     },
     getRoles() {
-      axios.get("http://localhost:3000/roles", this.config).then((response) => {
+      axios.get("/roles", this.config).then((response) => {
         this.roles = response.data;
       });
     },

@@ -154,7 +154,7 @@ export default {
       console.log("batch: ", batch);
       // send batch update
       axios
-        .patch("http://localhost:3000/todos/batch", batch, this.config)
+        .patch("/todos/batch", batch, this.config)
         .then((response) => {
           console.log(response);
         })
@@ -182,7 +182,7 @@ export default {
 
     // SINGLE REST ACTIONS (DEPRECATED -> USE BATCH)
     getTodos() {
-      axios.get("http://localhost:3000/todos", this.config).then((response) => {
+      axios.get("/todos", this.config).then((response) => {
         this.todos = response.data;
         this.todos.sort((a, b) => b.order - a.order);
         this.convertToNested();
@@ -191,11 +191,7 @@ export default {
     },
     async createTodo(description) {
       const newTodo = await axios
-        .post(
-          "http://localhost:3000/todos/",
-          { description: description },
-          this.config
-        )
+        .post("/todos/", { description: description }, this.config)
         .then((response) => {
           this.newTodo = null;
           return response.data;
@@ -204,19 +200,15 @@ export default {
       return newTodo;
     },
     updateTodo(todo) {
-      axios
-        .patch("http://localhost:3000/todos/" + todo.id, todo, this.config)
-        .then((response) => {
-          console.log(response);
-        });
+      axios.patch("/todos/" + todo.id, todo, this.config).then((response) => {
+        console.log(response);
+      });
     },
     deleteTodo(todo) {
-      axios
-        .delete("http://localhost:3000/todos/" + todo.id, this.config)
-        .then((response) => {
-          console.log(response);
-          this.getTodos();
-        });
+      axios.delete("/todos/" + todo.id, this.config).then((response) => {
+        console.log(response);
+        this.getTodos();
+      });
     },
   },
   created() {
