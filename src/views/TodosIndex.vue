@@ -10,10 +10,6 @@
       @onInput="(element, text) => onInput(element, text)"
       @onDelete="(element) => deleteTodo(element)"
     />
-
-    <!-- <ShowData :todos="todos"></ShowData> -->
-    <ShowData :todos="nestedTodos"></ShowData>
-    <ShowData :todos="flatTodos"></ShowData>
   </div>
 </template>
 
@@ -22,11 +18,10 @@
 import axios from "axios";
 import DetectInactivity from "../components/detectInactivity.vue";
 import nestedDraggable from "../components/nestedDraggable.vue";
-import ShowData from "../components/ShowData.vue";
 
 export default {
   name: "TodosIndex",
-  components: { DetectInactivity, nestedDraggable, ShowData },
+  components: { DetectInactivity, nestedDraggable },
   data() {
     return {
       todos: [], // must be an array to work with Draggable
